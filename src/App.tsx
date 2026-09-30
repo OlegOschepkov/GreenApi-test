@@ -1,14 +1,20 @@
-import { ThemeProvider } from 'styled-components'
+import { LoginScreen } from '@/components/LoginScreen/LoginScreen'
+import { SessionStatus } from '@/components/SessionStatus/SessionStatus'
+import { SessionProvider } from '@/services/SessionProvider'
+import { useSession } from '@/services/session-context'
+import '@/styles/main.scss'
 
-import { AppStyles } from '@/styles'
-import { theme } from '@/styles/theme'
+function AppContent() {
+  const { status } = useSession()
+
+  return status === 'connected' ? <SessionStatus /> : <LoginScreen />
+}
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <AppStyles />
-      <p>styled-components wired</p>
-    </ThemeProvider>
+    <SessionProvider>
+      <AppContent />
+    </SessionProvider>
   )
 }
 

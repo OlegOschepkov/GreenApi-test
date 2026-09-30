@@ -9,16 +9,17 @@
     "typecheck": "tsc -b",
     "lint": "oxlint --type-aware",
     "lint:fix": "oxlint --type-aware --fix",
+    "lint:styles": "stylelint \"src/**/*.scss\"",
+    "lint:styles:fix": "stylelint \"src/**/*.scss\" --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm run format:check",
+    "check": "npm run typecheck && npm run lint && npm run lint:styles && npm run format:check",
     "preview": "vite preview"
   },
   "dependencies": {
+    "modern-normalize": "^3.0.1",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "styled-components": "^6.5.3",
-    "styled-normalize": "^8.1.1"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
@@ -27,7 +28,11 @@
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.86.0",
     "oxlint-tsgolint": "^7.0.2003",
+    "postcss-scss": "^4.0.9",
     "prettier": "^3.9.9",
+    "sass-embedded": "^1.105.1",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"
   }

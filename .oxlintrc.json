@@ -39,6 +39,10 @@
     "typescript/consistent-type-imports": "error",
 
     "import/no-duplicates": "error",
+    "import/no-unassigned-import": [
+      "error",
+      { "allow": ["**/*.css", "**/*.scss"] }
+    ],
     "promise/always-return": "error",
     "promise/no-return-wrap": "error",
 

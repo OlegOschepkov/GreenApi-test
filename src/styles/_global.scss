@@ -1,0 +1,82 @@
+@use './tokens' as *;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  background: $color-background-page;
+  color: $color-text-primary;
+  font-family: $font-family;
+  font-size: $font-size-body;
+  line-height: $line-height-body;
+  letter-spacing: 0.15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// iOS Safari зумит вьюпорт при фокусе поля с кеглем меньше 16px.
+input,
+textarea,
+select {
+  font-size: $font-size-body;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: $color-text-muted;
+}
+
+a:hover {
+  color: $color-accent-default;
+}
+
+:focus-visible {
+  outline: 2px solid $color-accent-default;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: $color-accent-soft;
+}
+
+// В MAX скроллбары в списке чатов и в переписке тонкие и незаметные.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(6 7 8 / 20%) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: $radius-round;
+  background: rgb(6 7 8 / 20%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(6 7 8 / 32%);
+}
+
+// !important здесь обязателен: правило должно перебивать любые анимации
+// компонентов, иначе отключение движения не сработает.
+/* stylelint-disable declaration-no-important -- обоснование в комментарии выше */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+/* stylelint-enable declaration-no-important */
