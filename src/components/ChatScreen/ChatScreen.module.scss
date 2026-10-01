@@ -1,0 +1,223 @@
+@use '@/styles/tokens' as *;
+
+.screen {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  padding: 20px;
+}
+
+.panel {
+  display: flex;
+  width: 100%;
+  max-width: $layout-chat-max-width;
+  flex-direction: column;
+  border-radius: $radius-2xl;
+  background: $color-background-card;
+  box-shadow: $shadow-e3;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid $color-divider-secondary;
+}
+
+.identity {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  overflow: hidden;
+  font-size: $font-size-chat-header-title;
+  font-weight: 600;
+  line-height: $line-height-chat-header-title;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  margin: 0;
+  overflow: hidden;
+  color: $color-text-tertiary;
+  font-size: $font-size-note;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: $radius-round;
+  background: $color-background-secondary;
+  color: $color-text-secondary;
+  font-size: $font-size-note;
+}
+
+.logout {
+  padding: 6px 12px;
+  border: 1px solid $color-divider-primary;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-description;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-attention;
+  }
+}
+
+.search {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-bottom: 1px solid $color-divider-secondary;
+}
+
+.phone-prefix {
+  flex: none;
+  padding: 9px 4px 9px 12px;
+  border: 1px solid $color-divider-primary;
+  border-right: none;
+  border-radius: $radius-md 0 0 $radius-md;
+  background: $color-background-secondary;
+  color: $color-text-secondary;
+  font-size: $font-size-body;
+}
+
+.phone-input {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid $color-divider-primary;
+  border-left-color: $color-divider-secondary;
+  border-radius: 0 $radius-md $radius-md 0;
+  background: $color-background-secondary;
+  color: inherit;
+
+  &:focus {
+    border-color: $color-accent-default;
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: $color-attention;
+  }
+}
+
+.search-button {
+  flex: none;
+  padding: 9px 16px;
+  border: none;
+  border-radius: $radius-md;
+  background: $color-accent-default;
+  color: $color-text-on-accent;
+  font-size: $font-size-description;
+  font-weight: 500;
+  transition: opacity $transition-fast;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.error {
+  flex: none;
+  margin: 12px 18px 0;
+  padding: 8px 10px;
+  border-radius: $radius-md;
+  background: rgb(255 48 60 / 8%);
+  color: $color-attention;
+  font-size: $font-size-description;
+}
+
+.thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  overflow-y: auto;
+  background: $color-chat-ground;
+}
+
+.placeholder {
+  margin: auto;
+  color: $color-text-muted;
+  font-size: $font-size-description;
+  text-align: center;
+}
+
+.bubble {
+  display: flex;
+  max-width: $layout-bubble-max-width;
+  flex-direction: column;
+  padding: 8px 12px;
+  border-radius: $radius-lg;
+  background: $color-bubble-incoming;
+  color: $color-text-primary;
+
+  &[data-side='outgoing'] {
+    align-self: flex-end;
+    border-bottom-right-radius: $radius-xs;
+    background: $color-bubble-outgoing;
+    color: $color-bubble-outgoing-text;
+  }
+
+  &[data-side='incoming'] {
+    align-self: flex-start;
+    border-bottom-left-radius: $radius-xs;
+  }
+}
+
+.author {
+  margin-bottom: 2px;
+  color: $color-accent-default;
+  font-size: $font-size-note;
+  font-weight: 600;
+}
+
+.bubble-text {
+  margin: 0;
+  font-size: $font-size-body;
+  line-height: $line-height-body;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.bubble-time {
+  align-self: flex-end;
+  margin-top: 2px;
+  color: $color-text-tertiary;
+  font-size: $font-size-bubble-meta;
+  line-height: $line-height-bubble-meta;
+
+  .bubble[data-side='outgoing'] & {
+    color: rgb(255 255 255 / 72%);
+  }
+}

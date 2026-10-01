@@ -1,5 +1,5 @@
 /**
- * Типизация CSS Modules в vite/client — это `Record<string, string>`, поэтому
+ * Типизация CSS Modules в vite/client - это `Record<string, string>`, поэтому
  * опечатка в имени класса (`styles.buble`) спокойно компилируется и в рантайме
  * даёт undefined, а элемент молча теряет стили. styled-components от этого
  * защищался типизированными пропсами, здесь ловим в dev-режиме.

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import { GreenApiError, createGreenApi } from '@/api/greenApi'
+import { createGreenApi, toUserMessage } from '@/api/greenApi'
 import { describeInstanceState, isReadyState } from '@/api/instance-state'
 import type { GreenApiCredentials } from '@/api/types'
 import { clearCredentials, saveCredentials } from './storage'
@@ -11,18 +11,6 @@ import type {
   SessionResult,
   SessionStatus,
 } from './session-context'
-
-function toUserMessage(error: unknown): string {
-  if (error instanceof GreenApiError) {
-    return error.message
-  }
-
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return 'Неизвестная ошибка при подключении'
-}
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<SessionStatus>('disconnected')
@@ -82,7 +70,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setInstanceState(stateInstance)
 
         if (!isReadyState(stateInstance)) {
-          // Реквизиты верны — сервер ответил осмысленным состоянием.
+          // Реквизиты верны - сервер ответил осмысленным состоянием.
           // Сохраняем их, чтобы пользователь не вводил всё заново после QR-скана.
           saveCredentials(credentials)
 

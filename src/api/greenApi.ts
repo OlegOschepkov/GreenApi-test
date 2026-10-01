@@ -4,8 +4,8 @@ import {
   RECEIVE_TIMEOUT_MIN_SECONDS,
 } from './types'
 import type {
-  CheckWhatsappRequest,
-  CheckWhatsappResponse,
+  CheckAccountRequest,
+  CheckAccountResponse,
   ChatHistoryMessage,
   DeleteNotificationResponse,
   GetChatHistoryRequest,
@@ -19,25 +19,21 @@ import type {
 /* ── Ошибки ──────────────────────────────────────────────────────────────── */
 
 /**
- * Домен GREEN-API.
- *
- * Пользователю его вводить не нужно: значение из личного кабинета у всех
- * облачных инстансов одинаковое (старый домен `api.green-api.com` тоже
- * работает, проверено пробами). Если инстанс развёрнут на своём сервере —
- * это единственная строка, которую надо поменять.
+ * В личном кабинете адрес указан у каждого инстанса отдельно, поэтому он
+ * лежит в `.env` под именем `VITE_GREEN_API_URL`.
  */
-const GREEN_API_URL = 'https://api.greenapi.com'
+const GREEN_API_URL = import.meta.env.VITE_GREEN_API_URL ?? ''
 
 /**
- * `config` — неверный адрес в коде, `network` — нет связи или CORS,
- * `http` — сервер ответил ошибкой, `parse` — ответ не разобрался.
+ * `config` - неверный адрес в коде, `network` - нет связи или CORS,
+ * `http` - сервер ответил ошибкой, `parse` - ответ не разобрался.
  */
 export type GreenApiErrorKind = 'config' | 'network' | 'http' | 'parse'
 
 export class GreenApiError extends Error {
   readonly kind: GreenApiErrorKind
   readonly status: number | null
-  /** Тело ответа как есть — для диагностики. */
+  /** Тело ответа как есть - для диагностики. */
   readonly rawBody: string
 
   constructor(
@@ -53,11 +49,23 @@ export class GreenApiError extends Error {
   }
 }
 
+/**
+ * Текст ошибки для пользователя. GREEN-API уже отдаёт готовые формулировки,
+ * поэтому разбирать приходится только неожиданные значения.
+ */
+export function toUserMessage(error: unknown): string {
+  if (error instanceof GreenApiError || error instanceof Error) {
+    return error.message
+  }
+
+  return 'Неизвестная ошибка при обращении к GREEN-API'
+}
+
 /** Тексты для кодов, которые чаще всего видит пользователь. */
 const STATUS_FALLBACK: Readonly<Record<number, string>> = {
   401: 'Неверный idInstance или apiTokenInstance',
   403: 'Доступ запрещён: проверьте реквизиты и имя метода',
-  429: 'Слишком много запросов — попробуйте позже',
+  429: 'Слишком много запросов - попробуйте позже',
   466: 'Исчерпан лимит тарифа GREEN-API',
 }
 
@@ -65,10 +73,6 @@ const STATUS_FALLBACK: Readonly<Record<number, string>> = {
 
 /**
  * Разобранный объект JSON.
- *
- * Называется не `Record`, чтобы не затенять встроенный `Record<K, V>` из
- * стандартной библиотеки: внутри собственной декларации такой алиас сослался
- * бы на сам себя, и получилась бы циклическая ссылка в типах.
  */
 type JsonObject = Readonly<Record<string, unknown>>
 
@@ -100,7 +104,7 @@ function clampReceiveTimeout(value: number): number {
 /**
  * Достаёт текст ошибки из тела любой формы: JSON с `message`, JSON с
  * вложенным `invokeStatus`, голый текст. HTML-заглушка nginx и пустое тело
- * (так приходит 401) текста не дают — подставляется STATUS_FALLBACK.
+ * (так приходит 401) текста не дают - подставляется STATUS_FALLBACK.
  */
 function extractErrorMessage(rawBody: string): string | null {
   const trimmed = rawBody.trim()
@@ -126,7 +130,7 @@ function extractErrorMessage(rawBody: string): string | null {
       return readString(parsed, 'message')
     }
   } catch {
-    // Не JSON — покажем текст как есть.
+    // Не JSON - покажем текст как есть.
   }
 
   return trimmed
@@ -140,16 +144,23 @@ function buildUrl(
   const suffix =
     options.pathSuffix === undefined ? '' : `/${options.pathSuffix}`
 
+  if (GREEN_API_URL === '') {
+    throw new GreenApiError(
+      'Не задан VITE_GREEN_API_URL: скопируйте .env.example в .env и укажите адрес своего инстанса',
+      'config',
+    )
+  }
+
   let url: URL
 
   try {
-    // Формат подтверждён пробами: {домен}/waInstance{id}/{method}/{token}
+    // Формат из документации: {домен}/waInstance{id}/{method}/{token}
     url = new URL(
       `${GREEN_API_URL}/waInstance${credentials.idInstance}/${method}/${credentials.apiTokenInstance}${suffix}`,
     )
   } catch {
     throw new GreenApiError(
-      `Некорректный адрес GREEN-API в коде: «${GREEN_API_URL}». Ожидается https://api.greenapi.com`,
+      `Некорректный VITE_GREEN_API_URL: «${GREEN_API_URL}». Ожидается адрес из личного кабинета, например https://4100.api.green-api.com`,
       'config',
     )
   }
@@ -162,7 +173,7 @@ function buildUrl(
 }
 
 /**
- * Один вызов GREEN-API. Возвращает `null`, если ответ 200 с ПУСТЫМ телом —
+ * Один вызов GREEN-API. Возвращает `null`, если ответ 200 с ПУСТЫМ телом -
  * это нормальный сценарий ReceiveNotification по истечении receiveTimeout.
  */
 async function call<T = unknown>(
@@ -303,27 +314,18 @@ export function createGreenApi(credentials: GreenApiCredentials) {
     )
   }
 
-  /** Проверка наличия WhatsApp и получение chatId. */
-  async function checkWhatsapp(
-    payload: CheckWhatsappRequest,
+  /** Проверка наличия аккаунта MAX и получение его chatId. */
+  async function checkAccount(
+    payload: CheckAccountRequest,
     signal?: AbortSignal,
-  ): Promise<CheckWhatsappResponse> {
-    if (
-      (payload.chatId === undefined) ===
-      (payload.phoneNumber === undefined)
-    ) {
-      throw new TypeError(
-        'checkWhatsapp требует ровно одно из chatId или phoneNumber',
-      )
-    }
-
+  ): Promise<CheckAccountResponse> {
     return required(
-      await call<CheckWhatsappResponse>(credentials, 'checkWhatsapp', {
+      await call<CheckAccountResponse>(credentials, 'checkAccount', {
         httpMethod: 'POST',
-        body: payload,
+        body: { phoneNumber: payload.phoneNumber },
         signal,
       }),
-      'checkWhatsapp',
+      'checkAccount',
     )
   }
 
@@ -343,7 +345,7 @@ export function createGreenApi(credentials: GreenApiCredentials) {
   }
 
   /**
-   * Длинный опрос. `null` — за `receiveTimeout` секунд ничего не пришло, и это
+   * Длинный опрос. `null` - за `receiveTimeout` секунд ничего не пришло, и это
    * норма, а не ошибка. Полученное уведомление нужно подтвердить через
    * deleteNotification, иначе очередь встанет.
    */
@@ -390,7 +392,12 @@ export function createGreenApi(credentials: GreenApiCredentials) {
     )
   }
 
-  /** История чата: ПЛОСКИЙ МАССИВ по времени убыванием, пагинации нет. */
+  /**
+   * История чата одним плоским массивом, пагинации нет.
+   *
+   * Порядок ответ сервера не гарантирует, поэтому сортируем сами и отдаём
+   * переписку от старых сообщений к новым.
+   */
   async function getChatHistory(
     payload: GetChatHistoryRequest,
     signal?: AbortSignal,
@@ -405,12 +412,12 @@ export function createGreenApi(credentials: GreenApiCredentials) {
       },
     )
 
-    return messages ?? []
+    return (messages ?? []).toSorted((a, b) => a.timestamp - b.timestamp)
   }
 
   return {
     getStateInstance,
-    checkWhatsapp,
+    checkAccount,
     sendMessage,
     receiveNotification,
     deleteNotification,

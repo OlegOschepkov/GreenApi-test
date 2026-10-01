@@ -9,7 +9,7 @@ export type GreenApiCredentials = {
 /* ── GetStateInstance ─────────────────────────────────────────────────────── */
 
 /**
- * sleepMode и yellowCard помечены устаревшими, но всё ещё приходят от сервера — поэтому оставлены.
+ * sleepMode и yellowCard помечены устаревшими, но всё ещё приходят от сервера - поэтому оставлены.
  */
 export const INSTANCE_STATES = [
   'authorized',
@@ -33,23 +33,18 @@ export function isKnownInstanceState(
   return (INSTANCE_STATES as readonly string[]).includes(value)
 }
 
-/* ── CheckWhatsapp ────────────────────────────────────────────────────────── */
+/* ── CheckAccount ─────────────────────────────────────────────────────────── */
 
-export type CheckWhatsappRequest = {
-  /** Либо `chatId`, либо `phoneNumber` — строго одно из двух. */
-  chatId?: string
-  /** Устаревший параметр, оставлен для совместимости. */
-  phoneNumber?: number
-  /** true — идти напрямую в WhatsApp, обновляя кэш инстанса. */
-  force?: boolean
+export type CheckAccountRequest = {
+  /** Номер без плюса и пробелов, только цифры: `79991234567`. */
+  phoneNumber: number
 }
 
-export type CheckWhatsappResponse = {
-  existsWhatsapp: boolean
+export type CheckAccountResponse = {
+  /** false - такого номера в MAX нет. */
+  exist: boolean
+  /** С этим chatId работают `getChatHistory` и `sendMessage`. */
   chatId: string
-  username: string
-  phoneNumber: string
-  fromCache: boolean
 }
 
 /* ── SendMessage ─────────────────────────────────────────────────────────── */
@@ -76,7 +71,7 @@ export const RECEIVE_TIMEOUT_DEFAULT_SECONDS = 5
  *
  * `text === null` означает «пришло не текстовое сообщение»: уведомление всё
  * равно нужно подтвердить через DeleteNotification, иначе очередь встанет.
- * `chatId` пустой, только если сервер прислал нестандартный `senderData` —
+ * `chatId` пустой, только если сервер прислал нестандартный `senderData` -
  * такое уведомление некуда маршрутизировать, его просто подтверждают.
  */
 export type IncomingNotification = {
@@ -91,7 +86,7 @@ export type IncomingNotification = {
 
 /* ── DeleteNotification ──────────────────────────────────────────────────── */
 
-/** `receiptId` передаётся в ПУТИ, а не в теле запроса. HTTP-метод — DELETE. */
+/** `receiptId` передаётся в ПУТИ, а не в теле запроса. HTTP-метод - DELETE. */
 export type DeleteNotificationResponse = {
   result: boolean
 }

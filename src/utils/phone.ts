@@ -1,8 +1,8 @@
 /**
  *
  * Код страны подставляет форма: пользователь вводит только 10 цифр номера
- * (`900 123-45-67`), а наружу отдаём готовые 11 цифр с семёркой — то, что
- * уходит в `CheckWhatsapp`.
+ * (`900 123-45-67`), а наружу отдаём готовые 11 цифр с семёркой - то, что
+ * уходит в `CheckAccount`.
  */
 
 const RU_COUNTRY_CODE = '7'
@@ -21,7 +21,7 @@ export function parsePhone(raw: string): PhoneParseResult {
     if (digits.startsWith(RU_COUNTRY_CODE) || digits.startsWith('8')) {
       return {
         ok: false,
-        error: 'Похоже, в нём остался код +7 — введите 10 цифр номера',
+        error: 'Похоже, в нём остался код +7 - введите 10 цифр номера',
       }
     }
 

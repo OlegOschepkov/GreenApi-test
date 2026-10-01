@@ -4,9 +4,9 @@ import type { GreenApi } from '@/api/greenApi'
 import type { GreenApiCredentials } from '@/api/types'
 
 /**
- * `disconnected` — нет подключения или последняя попытка не удалась,
- * `connecting` — идёт проверка реквизитов,
- * `connected` — инстанс авторизован, можно работать с сообщениями.
+ * `disconnected` - нет подключения или последняя попытка не удалась,
+ * `connecting` - идёт проверка реквизитов,
+ * `connected` - инстанс авторизован, можно работать с сообщениями.
  */
 export type SessionStatus = 'disconnected' | 'connecting' | 'connected'
 
@@ -29,7 +29,7 @@ export type SessionContextValue = {
   connect: (credentials: GreenApiCredentials) => Promise<SessionResult>
   /**
    * Выход: отменяет попытку, удаляет реквизиты из localStorage и сбрасывает
-   * состояние. Очистка хранилища спрятана здесь намеренно — вызывающий код не
+   * состояние. Очистка хранилища спрятана здесь намеренно - вызывающий код не
    * сможет забыть про неё.
    */
   logout: () => void
@@ -38,7 +38,7 @@ export type SessionContextValue = {
 export const SessionContext = createContext<SessionContextValue | null>(null)
 
 /**
- * Достаёт сессию. Бросает ошибку, если компонент оказался вне провайдера —
+ * Достаёт сессию. Бросает ошибку, если компонент оказался вне провайдера -
  * это ошибка разработки, а не пользовательский сценарий.
  */
 export function useSession(): SessionContextValue {
