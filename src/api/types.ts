@@ -80,6 +80,8 @@ export type IncomingNotification = {
   chatId: string
   messageId: string
   timestamp: number
+  /** Тип из `messageData.typeMessage`: текст, изображение, стикер и так далее. */
+  typeMessage: string
   text: string | null
   isFromMe: boolean
 }

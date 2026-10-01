@@ -1,10 +1,11 @@
 /* oxlint-disable react-perf/jsx-no-new-function-as-prop */
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 
 import { toUserMessage } from '@/api/greenApi'
-import type { ChatHistoryMessage } from '@/api/types'
+import type { ChatHistoryMessage, IncomingNotification } from '@/api/types'
+import { useIncomingMessages } from '@/hooks/useIncomingMessages'
 import { useSession } from '@/services/session-context'
 import { cssModule } from '@/styles/css-module'
 import { formatTime, messageText, shouldShowAuthor } from '@/utils/chat'
@@ -17,6 +18,9 @@ const PHONE_FIELD_ID = 'chat-phone'
 const PHONE_ERROR_ID = 'chat-phone-error'
 
 const HISTORY_LIMIT = 50
+
+/** Разумный предел длины текста: GREEN-API лимит не документирует. */
+const MAX_MESSAGE_LENGTH = 4096
 
 type ChatTarget = {
   chatId: string
@@ -31,12 +35,23 @@ export function ChatScreen() {
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [chat, setChat] = useState<ChatTarget | null>(null)
   const [messages, setMessages] = useState<ChatHistoryMessage[]>([])
+  const [draft, setDraft] = useState('')
+  const [sending, setSending] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Отменяем поиск, если пользователь ушёл или начал новый раньше времени.
   const abortRef = useRef<AbortController | null>(null)
   const bottomRef = useRef<HTMLDivElement | null>(null)
+
+  // Открытый чат нужен обработчику уведомлений, но опрос перезапускать при
+  // смене чата нельзя, поэтому держим его в ref.
+  const chatRef = useRef<ChatTarget | null>(null)
+
+  chatRef.current = chat
+
+  // Писать можно только в открытый чат, и не одновременно с поиском и отправкой.
+  const composerDisabled = sending || busy || chat === null
 
   useEffect(() => {
     return () => {
@@ -53,6 +68,48 @@ export function ChatScreen() {
     setPhone(event.target.value.replace(/\D/g, ''))
     setPhoneError(null)
   }
+
+  function handleDraftChange(event: ChangeEvent<HTMLInputElement>): void {
+    setDraft(event.target.value)
+  }
+
+  const handleNotification = useCallback(
+    (notification: IncomingNotification): void => {
+      // Без idMessage сообщение не приклеить к списку: ключи React должны
+      // быть уникальны. Подтверждение уведомления всё равно произойдёт.
+      if (notification.messageId === '') {
+        return
+      }
+
+      setMessages((current) => {
+        // То же самое сообщение приходит и из истории, и вебхуком
+        // `outgoingAPIMessageReceived` — второй раз не показываем.
+        if (current.some((item) => item.idMessage === notification.messageId)) {
+          return current
+        }
+
+        // Чужие чаты подтверждены, но в открытый чат не попадают.
+        if (notification.chatId !== chatRef.current?.chatId) {
+          return current
+        }
+
+        return [
+          ...current,
+          {
+            type: notification.isFromMe ? 'outgoing' : 'incoming',
+            idMessage: notification.messageId,
+            timestamp: notification.timestamp,
+            chatId: notification.chatId,
+            typeMessage: notification.typeMessage,
+            textMessage: notification.text ?? undefined,
+          },
+        ]
+      })
+    },
+    [],
+  )
+
+  useIncomingMessages(api, handleNotification)
 
   async function search(): Promise<void> {
     if (api === null) {
@@ -130,12 +187,60 @@ export function ChatScreen() {
     }
   }
 
+  async function send(): Promise<void> {
+    const text = draft.trim()
+
+    if (api === null || chat === null || text === '') {
+      return
+    }
+
+    setSending(true)
+    setError(null)
+
+    try {
+      const { idMessage } = await api.sendMessage({
+        chatId: chat.chatId,
+        message: text,
+      })
+
+      // Пустой ответ GREEN-API — это тоже отсутствие сообщения.
+      if (idMessage !== '') {
+        // Пузырь появляется после ответа сервера и с его idMessage: когда
+        // придёт вебхук `outgoingAPIMessageReceived`, повтор отсеется.
+        setMessages((current) => [
+          ...current,
+          {
+            type: 'outgoing',
+            idMessage,
+            timestamp: Math.floor(Date.now() / 1000),
+            chatId: chat.chatId,
+            typeMessage: 'textMessage',
+            textMessage: text,
+          },
+        ])
+      }
+
+      setDraft('')
+    } catch (caught) {
+      // Текст в поле и открытый чат сохраняем: сообщение можно повторить.
+      setError(toUserMessage(caught))
+    } finally {
+      setSending(false)
+    }
+  }
+
   // Обёртка нужна, чтобы обработчик оставался синхронным: промис, который
   // провалится, попадёт в обработчик события и станет необработанным.
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
 
     void search()
+  }
+
+  function handleSendSubmit(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault()
+
+    void send()
   }
 
   return (
@@ -164,7 +269,11 @@ export function ChatScreen() {
           </div>
         </header>
 
-        <form className={styles['search']} noValidate onSubmit={handleSubmit}>
+        <form
+          className={styles['search']}
+          noValidate
+          onSubmit={handleSearchSubmit}
+        >
           <label className={styles['phone-prefix']} htmlFor={PHONE_FIELD_ID}>
             +7
           </label>
@@ -237,6 +346,27 @@ export function ChatScreen() {
 
           <div ref={bottomRef} />
         </div>
+
+        <form className={styles['composer']} onSubmit={handleSendSubmit}>
+          <input
+            className={styles['composer-input']}
+            type="text"
+            placeholder="Сообщение"
+            autoComplete="off"
+            maxLength={MAX_MESSAGE_LENGTH}
+            value={draft}
+            onChange={handleDraftChange}
+            disabled={composerDisabled}
+            aria-label="Текст сообщения"
+          />
+          <button
+            className={styles['send-button']}
+            type="submit"
+            disabled={composerDisabled || draft.trim() === ''}
+          >
+            {sending ? 'Отправляем…' : 'Отправить'}
+          </button>
+        </form>
       </section>
     </main>
   )

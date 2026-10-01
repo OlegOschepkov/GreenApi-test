@@ -166,6 +166,58 @@
   background: $color-chat-ground;
 }
 
+.composer {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 18px;
+  border-top: 1px solid $color-divider-secondary;
+  background: $color-chat-ground;
+}
+
+.composer-input {
+  width: 100%;
+  max-width: $layout-composer-max-width;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid $color-divider-primary;
+  border-radius: $radius-md;
+  background: $color-background-secondary;
+  color: inherit;
+
+  &:focus {
+    border-color: $color-accent-default;
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.send-button {
+  flex: none;
+  padding: 9px 16px;
+  border: none;
+  border-radius: $radius-md;
+  background: $color-accent-default;
+  color: $color-text-on-accent;
+  font-size: $font-size-description;
+  font-weight: 500;
+  transition: opacity $transition-fast;
+
+  &:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
 .placeholder {
   margin: auto;
   color: $color-text-muted;

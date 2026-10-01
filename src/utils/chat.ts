@@ -42,6 +42,10 @@ export function messageText(message: {
     return text
   }
 
+  if (message.typeMessage === '') {
+    return 'Сообщение'
+  }
+
   return TYPE_LABELS[message.typeMessage] ?? `Тип ${message.typeMessage}`
 }
 

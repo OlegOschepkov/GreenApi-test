@@ -289,6 +289,10 @@ function normalizeNotification(
     messageId: readString(source, 'idMessage') ?? '',
     timestamp:
       typeof source['timestamp'] === 'number' ? source['timestamp'] : 0,
+    typeMessage:
+      readString(messageData, 'typeMessage') ??
+      readString(source, 'typeMessage') ??
+      '',
     // Присылают либо textMessage, либо extendedTextMessage.
     text: readString(textData, 'textMessage') ?? readString(extended, 'text'),
     isFromMe: OUTGOING_WEBHOOKS.has(readString(source, 'typeWebhook') ?? ''),
