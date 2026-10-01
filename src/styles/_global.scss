@@ -8,12 +8,15 @@ body,
 
 body {
   overflow: hidden;
-  background: $color-background-page;
-  color: $color-text-primary;
+  background: $color-page;
+  color: $color-text;
   font-family: $font-family;
   font-size: $font-size-body;
   line-height: $line-height-body;
   letter-spacing: 0.15px;
+
+  // antialiased, а не subpixel-antialiased: субпиксельное сглаживание
+  // оставляет цветную кайму на светлом тексте по тёмному фону.
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -31,11 +34,11 @@ textarea::placeholder {
 }
 
 a:hover {
-  color: $color-accent-default;
+  color: $color-accent;
 }
 
 :focus-visible {
-  outline: 2px solid $color-accent-default;
+  outline: 2px solid $color-accent;
   outline-offset: 2px;
 }
 
@@ -43,10 +46,11 @@ a:hover {
   background: $color-accent-soft;
 }
 
-// В MAX скроллбары в списке чатов и в переписке тонкие и незаметные.
+// В MAX скроллбары тонкие и полупрозрачные. На тёмном фоне чёрные
+// полоски не видны, поэтому заливка светлая.
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(6 7 8 / 20%) transparent;
+  scrollbar-color: rgb(255 255 255 / 20%) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -60,11 +64,11 @@ a:hover {
 
 ::-webkit-scrollbar-thumb {
   border-radius: $radius-round;
-  background: rgb(6 7 8 / 20%);
+  background: rgb(255 255 255 / 20%);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(6 7 8 / 32%);
+  background: rgb(255 255 255 / 32%);
 }
 
 // !important здесь обязателен: правило должно перебивать любые анимации

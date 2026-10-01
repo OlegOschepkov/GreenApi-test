@@ -12,9 +12,10 @@
   width: 100%;
   max-width: $layout-chat-max-width;
   flex-direction: column;
-  border-radius: $radius-2xl;
-  background: $color-background-card;
-  box-shadow: $shadow-e3;
+  border-radius: $radius-md;
+  background: $color-chat-panel;
+  box-shadow: $shadow-panel;
+  color: $color-text;
   overflow: hidden;
 }
 
@@ -25,7 +26,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 18px;
-  border-bottom: 1px solid $color-divider-secondary;
+  border-bottom: 1px solid $color-border;
 }
 
 .identity {
@@ -35,9 +36,10 @@
 .title {
   margin: 0;
   overflow: hidden;
-  font-size: $font-size-chat-header-title;
+  color: $color-text;
+  font-size: $font-size-title;
   font-weight: 600;
-  line-height: $line-height-chat-header-title;
+  line-height: $line-height-title;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -45,7 +47,7 @@
 .subtitle {
   margin: 0;
   overflow: hidden;
-  color: $color-text-tertiary;
+  color: $color-text-secondary;
   font-size: $font-size-note;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -61,14 +63,14 @@
 .badge {
   padding: 3px 8px;
   border-radius: $radius-round;
-  background: $color-background-secondary;
+  background: $color-surface-field-active;
   color: $color-text-secondary;
   font-size: $font-size-note;
 }
 
 .logout {
   padding: 6px 12px;
-  border: 1px solid $color-divider-primary;
+  border: 1px solid $color-border;
   border-radius: $radius-md;
   background: transparent;
   color: $color-text-secondary;
@@ -86,16 +88,16 @@
   align-items: center;
   gap: 8px;
   padding: 12px 18px;
-  border-bottom: 1px solid $color-divider-secondary;
+  border-bottom: 1px solid $color-border;
 }
 
 .phone-prefix {
   flex: none;
   padding: 9px 4px 9px 12px;
-  border: 1px solid $color-divider-primary;
+  border: 1px solid $color-border;
   border-right: none;
-  border-radius: $radius-md 0 0 $radius-md;
-  background: $color-background-secondary;
+  border-radius: $radius-sm 0 0 $radius-sm;
+  background: $color-surface-field;
   color: $color-text-secondary;
   font-size: $font-size-body;
 }
@@ -104,14 +106,18 @@
   width: 100%;
   min-width: 0;
   padding: 9px 12px;
-  border: 1px solid $color-divider-primary;
-  border-left-color: $color-divider-secondary;
-  border-radius: 0 $radius-md $radius-md 0;
-  background: $color-background-secondary;
-  color: inherit;
+  border: 1px solid $color-border;
+  border-left-color: transparent;
+  border-radius: 0 $radius-sm $radius-sm 0;
+  background: $color-surface-field;
+  color: $color-text;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
 
   &:focus {
-    border-color: $color-accent-default;
+    border-color: $color-accent;
     outline: none;
   }
 
@@ -127,11 +133,11 @@
 
 .search-button {
   flex: none;
-  padding: 9px 16px;
+  padding: 10px 12px;
   border: none;
   border-radius: $radius-md;
-  background: $color-accent-default;
-  color: $color-text-on-accent;
+  background: $color-accent;
+  color: $color-text;
   font-size: $font-size-description;
   font-weight: 500;
   transition: opacity $transition-fast;
@@ -150,12 +156,16 @@
   flex: none;
   margin: 12px 18px 0;
   padding: 8px 10px;
-  border-radius: $radius-md;
-  background: rgb(255 48 60 / 8%);
+  border-radius: $radius-sm;
+  background: $color-error-bg;
   color: $color-attention;
   font-size: $font-size-description;
 }
 
+// Фон переписки: узор и градиент одним background-image. Псевдоэлемент
+// не нужен — узор не перехватывает клики и скроллится с содержимым.
+// Первый слой в списке рисуется сверху, поэтому узор стоит первым:
+// иначе непрозрачный градиент снизу его полностью закроет.
 .thread {
   display: flex;
   flex: 1;
@@ -163,7 +173,17 @@
   gap: 8px;
   padding: 16px 18px;
   overflow-y: auto;
-  background: $color-chat-ground;
+  background-image:
+    url('@/assets/chat-pattern.svg'),
+    linear-gradient(180deg, $color-chat-ground 0%, #0a0d1a 100%);
+  background-repeat: repeat, no-repeat;
+  background-position:
+    top left,
+    center;
+  background-size:
+    300px 300px,
+    cover;
+  color: $color-text;
 }
 
 .composer {
@@ -172,8 +192,7 @@
   align-items: flex-end;
   gap: 8px;
   padding: 10px 18px;
-  border-top: 1px solid $color-divider-secondary;
-  background: $color-chat-ground;
+  border-top: 1px solid $color-border;
 }
 
 .composer-input {
@@ -181,13 +200,17 @@
   max-width: $layout-composer-max-width;
   min-width: 0;
   padding: 9px 12px;
-  border: 1px solid $color-divider-primary;
-  border-radius: $radius-md;
-  background: $color-background-secondary;
-  color: inherit;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-surface-field;
+  color: $color-text;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
 
   &:focus {
-    border-color: $color-accent-default;
+    border-color: $color-accent;
     outline: none;
   }
 
@@ -199,11 +222,11 @@
 
 .send-button {
   flex: none;
-  padding: 9px 16px;
+  padding: 10px 12px;
   border: none;
   border-radius: $radius-md;
-  background: $color-accent-default;
-  color: $color-text-on-accent;
+  background: $color-accent;
+  color: $color-text;
   font-size: $font-size-description;
   font-weight: 500;
   transition: opacity $transition-fast;
@@ -232,24 +255,23 @@
   padding: 8px 12px;
   border-radius: $radius-lg;
   background: $color-bubble-incoming;
-  color: $color-text-primary;
+  color: $color-text;
 
   &[data-side='outgoing'] {
     align-self: flex-end;
-    border-bottom-right-radius: $radius-xs;
-    background: $color-bubble-outgoing;
-    color: $color-bubble-outgoing-text;
+    border-bottom-right-radius: $radius-sm;
+    background: linear-gradient(180deg, #17a8e5 0%, #0b8ce8 100%);
   }
 
   &[data-side='incoming'] {
     align-self: flex-start;
-    border-bottom-left-radius: $radius-xs;
+    border-bottom-left-radius: $radius-sm;
   }
 }
 
 .author {
   margin-bottom: 2px;
-  color: $color-accent-default;
+  color: #4db8ff;
   font-size: $font-size-note;
   font-weight: 600;
 }
@@ -265,11 +287,11 @@
 .bubble-time {
   align-self: flex-end;
   margin-top: 2px;
-  color: $color-text-tertiary;
-  font-size: $font-size-bubble-meta;
-  line-height: $line-height-bubble-meta;
+  color: $color-text-muted;
+  font-size: $font-size-meta;
+  line-height: $line-height-meta;
 
   .bubble[data-side='outgoing'] & {
-    color: rgb(255 255 255 / 72%);
+    color: rgb(255 255 255 / 70%);
   }
 }

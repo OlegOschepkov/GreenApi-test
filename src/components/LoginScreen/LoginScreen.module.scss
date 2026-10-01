@@ -12,9 +12,10 @@
   width: 100%;
   max-width: 420px;
   padding: 28px;
-  border-radius: $radius-3xl;
-  background: $color-background-card;
-  box-shadow: $shadow-e3;
+  border-radius: $radius-lg;
+  background: #1f2140;
+  box-shadow: $shadow-panel;
+  color: $color-text;
 }
 
 .header {
@@ -29,9 +30,9 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 14px;
-  border-radius: $radius-2xl;
-  background: $color-accent-default;
-  color: $color-text-on-accent;
+  border-radius: $radius-md;
+  background: $color-accent;
+  color: $color-text;
   font-size: $font-size-body;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -39,9 +40,10 @@
 
 .title {
   margin: 0 0 6px;
-  font-size: $font-size-chat-header-title;
+  color: $color-text;
+  font-size: $font-size-title;
   font-weight: 600;
-  line-height: $line-height-chat-header-title;
+  line-height: $line-height-title;
 }
 
 .subtitle {
@@ -54,6 +56,7 @@
   padding: 1px 4px;
   border-radius: $radius-xs;
   background: $color-accent-soft;
+  color: #7cc4ff;
   font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', consolas, monospace;
   font-size: $font-size-note;
 }
@@ -61,8 +64,8 @@
 .error {
   margin: 0 0 16px;
   padding: 10px 12px;
-  border-radius: $radius-md;
-  background: rgb(255 48 60 / 8%);
+  border-radius: $radius-sm;
+  background: $color-error-bg;
   color: $color-attention;
   font-size: $font-size-description;
 }
@@ -93,14 +96,21 @@
   width: 100%;
   min-width: 0;
   padding: 10px 12px;
-  border: 1px solid $color-divider-primary;
-  border-radius: $radius-md;
-  background: $color-background-secondary;
-  color: inherit;
-  transition: border-color $transition-fast;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-surface-field;
+  color: $color-text;
+  transition:
+    border-color $transition-fast,
+    background $transition-fast;
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
 
   &:focus {
-    border-color: $color-accent-default;
+    border-color: $color-accent;
+    background: $color-surface-field-active;
     outline: none;
   }
 
@@ -117,15 +127,18 @@
 .reveal {
   flex: none;
   padding: 0 12px;
-  border: 1px solid $color-divider-primary;
-  border-radius: $radius-md;
-  background: $color-background-secondary;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-surface-field;
   color: $color-text-secondary;
   font-size: $font-size-label;
-  transition: color $transition-fast;
+  transition:
+    color $transition-fast,
+    background $transition-fast;
 
   &:hover:not(:disabled) {
-    color: $color-accent-default;
+    background: $color-surface-field-active;
+    color: $color-text;
   }
 
   &:disabled {
@@ -144,9 +157,9 @@
   margin-top: 4px;
   padding: 12px;
   border: none;
-  border-radius: $radius-md;
-  background: $color-accent-default;
-  color: $color-text-on-accent;
+  border-radius: $radius-sm;
+  background: $color-accent;
+  color: $color-text;
   font-size: $font-size-body;
   font-weight: 500;
   transition: opacity $transition-fast;
@@ -167,7 +180,7 @@
 
 .note {
   margin: 20px 0 0;
-  color: $color-text-tertiary;
+  color: $color-text-muted;
   font-size: $font-size-note;
   line-height: 14px;
 }

@@ -1,53 +1,35 @@
-// Переменные получены из https://web.max.ru/
-// Импортируется через // `@use './tokens' as *;`
+// Тёмная тема. Значения сняты с https://web.max.ru (тема `simple`, dark).
+// Импортируется через `@use './tokens' as *;`
+// Токен лежит здесь, только если используется в двух и более местах.
+// Одноразовые значения остаются рядом с местом использования.
 
-$color-background-page: #edeef2;
-$color-background-primary: #fff;
-$color-background-secondary: #f5f7fa;
-$color-background-card: #fff;
-$color-background-float: #fff;
-
-$color-chat-ground: #fff;
-
-$color-bubble-incoming: #f2f2f2;
-$color-bubble-outgoing: #007aff;
-$color-bubble-outgoing-text: #fff;
-
-$color-accent-default: #007aff;
-$color-accent-soft: rgb(0 122 255 / 8%);
-$color-accent-border: rgb(0 122 255 / 24%);
-
+// Цвета
+$color-page: #edeef2;
+$color-chat-ground: #17181c;
+$color-chat-panel: #14182a;
+$color-text: #fff;
+$color-text-secondary: rgb(255 255 255 / 60%);
+$color-text-muted: rgb(255 255 255 / 40%);
+$color-surface-field: rgb(255 255 255 / 6%);
+$color-surface-field-active: rgb(255 255 255 / 10%);
+$color-border: rgb(255 255 255 / 10%);
+$color-accent: #007aff;
+$color-accent-soft: rgb(0 122 255 / 16%);
 $color-attention: #ff303c;
-$color-positive: #1abe43;
+$color-error-bg: rgb(255 48 60 / 15%);
+$color-bubble-incoming: rgb(255 255 255 / 10%);
 
-$color-badge-fill: #17181c;
-$color-badge-text: #fff;
-
-$color-text-primary: #060708;
-$color-text-secondary: rgb(6 7 8 / 68%);
-$color-text-tertiary: rgb(6 7 8 / 52%);
-$color-text-muted: rgb(6 7 8 / 40%);
-$color-text-on-accent: #fff;
-
-$color-divider-primary: rgb(12 13 14 / 16%);
-$color-divider-secondary: rgb(12 13 14 / 6%);
-
+// Радиусы
 $radius-xs: 2px;
-$radius-sm: 4px;
-$radius-md: 6px;
-$radius-lg: 8px;
-$radius-xl: 10px;
-$radius-2xl: 12px;
-$radius-3xl: 16px;
-$radius-4xl: 20px;
+$radius-sm: 6px;
+$radius-md: 12px;
+$radius-lg: 16px;
 $radius-round: 9999px;
 
-$shadow-e1: 0 1px 2px 0 rgb(0 0 0 / 6%);
-$shadow-e3:
-  0 4px 16px 0 rgb(0 0 0 / 8%),
-  0 0 2px 0 rgb(0 0 0 / 8%);
-$shadow-e3-single: 0 2px 12px 0 rgb(0 0 0 / 12%);
+// Тени
+$shadow-panel: 0 8px 32px 0 rgb(0 0 0 / 40%);
 
+// Типографика
 $font-family:
   'Roboto',
   system-ui,
@@ -57,28 +39,19 @@ $font-family:
   sans-serif;
 
 $font-size-body: 16px;
-$font-size-detail: 15px;
 $font-size-description: 13px;
 $font-size-label: 12px;
 $font-size-note: 10px;
-$font-size-chat-header-title: 17px;
-$font-size-chat-list-name: 14px;
-$font-size-timestamp: 13px;
-$font-size-bubble-meta: 11px;
+$font-size-title: 17px;
+$font-size-meta: 11px;
 
 $line-height-body: 20px;
-$line-height-chat-header-title: 22px;
-$line-height-chat-list-name: 18px;
-$line-height-bubble-meta: 16px;
+$line-height-title: 24px;
+$line-height-meta: 16px;
 
-$layout-rail-width: 77px;
-$layout-chat-list-width: 393px;
-$layout-chat-list-min-width: 260px;
+// Раскладка
 $layout-chat-max-width: 791px;
 $layout-bubble-max-width: 480px;
 $layout-composer-max-width: 740px;
-$layout-avatar-size: 40px;
-$layout-header-action-size: 32px;
 
 $transition-fast: 120ms ease;
-$transition-base: 200ms ease;
